@@ -52,9 +52,11 @@ export function Explorer({ assets }: { assets: SlimAsset[] }) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search symbol or name"
+          aria-label="Search assets"
           className="min-w-[200px] flex-1 rounded-lg border border-line bg-panel-2/60 px-3 py-2 text-sm text-ink outline-none placeholder:text-faint focus:border-line-strong"
         />
         <select
+          aria-label="Filter by sector"
           value={sector}
           onChange={(event) => setSector(event.target.value as Sector | "all")}
           className="rounded-lg border border-line bg-panel-2/60 px-3 py-2 text-sm text-ink outline-none focus:border-line-strong"
@@ -67,6 +69,7 @@ export function Explorer({ assets }: { assets: SlimAsset[] }) {
           ))}
         </select>
         <select
+          aria-label="Sort assets"
           value={sortKey}
           onChange={(event) => setSortKey(event.target.value as SortKey)}
           className="rounded-lg border border-line bg-panel-2/60 px-3 py-2 text-sm text-ink outline-none focus:border-line-strong"
@@ -104,8 +107,15 @@ export function Explorer({ assets }: { assets: SlimAsset[] }) {
             {visible.map((a) => (
               <tr
                 key={a.id}
+                tabIndex={0}
                 onClick={() => select(a.id)}
-                className={`cursor-pointer border-b border-line/60 transition-colors hover:bg-panel-2 ${
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    select(a.id);
+                  }
+                }}
+                className={`cursor-pointer border-b border-line/60 transition-colors hover:bg-panel-2 focus:bg-panel-2 focus:outline-none ${
                   selectedId === a.id ? "bg-panel-2" : ""
                 }`}
               >

@@ -74,9 +74,10 @@ const SECTOR_RULES: Array<{ sector: Sector; tags: Set<string> }> = [
   {
     sector: "Real World Assets",
     tags: new Set([
-      "real-world-assets-rwa", "rwa", "tokenized-stock", "tokenized-stocks",
-      "tokenized-treasury-bills", "tokenized-gold", "tokenized-assets",
-      "tokenized-real-estate", "xstocks-ecosystem",
+      "real-world-assets-rwa", "rwa", "real-world-assets-protocols",
+      "tokenized-stock", "tokenized-stocks", "tokenized-treasury-bills",
+      "tokenized-gold", "tokenized-assets", "tokenized-real-estate",
+      "xstocks-ecosystem",
     ]),
   },
   {
@@ -88,14 +89,28 @@ const SECTOR_RULES: Array<{ sector: Sector; tags: Set<string> }> = [
     tags: new Set([
       "defi", "decentralized-finance-defi", "dex", "lending-borrowing",
       "yield-farming", "liquid-staking-tokens", "liquid-staking",
-      "decentralized-exchange", "perpetuals", "derivatives",
+      "decentralized-exchange", "perpetuals", "derivatives", "launchpad",
+      "yield-aggregator", "pump-fun-ecosystem", "automated-market-maker-amm",
+    ]),
+  },
+  {
+    sector: "CeFi & Exchange",
+    tags: new Set([
+      "centralized-exchange", "marketplace", "discount-token",
+      "exchange-based-tokens", "cryptocurrency-exchange", "cefi",
     ]),
   },
   {
     sector: "Layer 2",
     tags: new Set(["layer-2", "optimistic-rollup", "zero-knowledge-rollup", "rollup"]),
   },
-  { sector: "Layer 1", tags: new Set(["layer-1", "proof-of-stake-pos", "proof-of-work-pow"]) },
+  {
+    sector: "Layer 1",
+    tags: new Set([
+      "layer-1", "proof-of-stake-pos", "proof-of-work-pow",
+      "bitcoin-ecosystem", "xrp-ecosystem", "medium-of-exchange",
+    ]),
+  },
   {
     sector: "Gaming",
     tags: new Set(["gaming", "game-fi", "play-to-earn", "metaverse", "nft-gaming"]),
@@ -112,7 +127,10 @@ const SECTOR_RULES: Array<{ sector: Sector; tags: Set<string> }> = [
     sector: "Infrastructure",
     tags: new Set([
       "infrastructure", "oracles", "interoperability", "scaling", "storage",
-      "smart-contracts", "cross-chain", "bridges",
+      "smart-contracts", "cross-chain", "bridges", "dao", "governance", "web3",
+      "wallet", "payments", "depin", "de-pin", "iot", "distributed-computing",
+      "services", "naming", "enterprise-solutions", "timestamping", "robotics",
+      "hardware", "mobile",
     ]),
   },
 ];

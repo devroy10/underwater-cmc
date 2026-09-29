@@ -409,6 +409,7 @@ export const SECTORS = [
   "Stablecoin",
   "AI & Big Data",
   "DeFi",
+  "CeFi & Exchange",
   "Layer 1",
   "Layer 2",
   "Memes",

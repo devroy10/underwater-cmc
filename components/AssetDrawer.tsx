@@ -10,6 +10,7 @@ export function AssetDrawer() {
   const { selectedId, select } = useSelection();
   const [detail, setDetail] = useState<AssetDetail | null>(null);
   const [errorId, setErrorId] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (selectedId === null) return;
@@ -61,9 +62,29 @@ export function AssetDrawer() {
             </div>
             <p className="text-sm text-muted">{asset?.name ?? "Loading"}</p>
           </div>
-          <button onClick={() => select(null)} className="rounded-md border border-line px-2 py-1 text-xs text-muted hover:text-ink">
-            Esc
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={async () => {
+                if (!asset) return;
+                try {
+                  await navigator.clipboard.writeText(`${window.location.origin}/?asset=${asset.symbol}`);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1500);
+                } catch {
+                  /* clipboard unavailable */
+                }
+              }}
+              className="rounded-md border border-line px-2 py-1 text-xs text-muted hover:text-ink"
+            >
+              {copied ? "Copied" : "Copy link"}
+            </button>
+            <button
+              onClick={() => select(null)}
+              className="rounded-md border border-line px-2 py-1 text-xs text-muted hover:text-ink"
+            >
+              Esc
+            </button>
+          </div>
         </div>
 
         {loading ? <p className="mt-8 text-sm text-muted">Loading asset…</p> : null}

@@ -6,7 +6,7 @@
  * client bundle.
  */
 
-import { useMemo, useRef, useState, type MouseEvent } from "react";
+import { useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
 import type { MarketPoint, ProfileBucket, SlimAsset } from "@/lib/types";
 import {
   SECTOR_COLORS,
@@ -256,8 +256,17 @@ export function CostBasisMap({
               fillOpacity={selected || hover?.id === a.id ? 0.95 : 0.5}
               stroke={selected ? "#e8f1f8" : "rgba(4,7,11,0.6)"}
               strokeWidth={selected ? 2 : 1}
-              className="cursor-pointer transition-[fill-opacity]"
+              className="cursor-pointer transition-[fill-opacity] focus:outline-none"
+              role="button"
+              tabIndex={0}
+              aria-label={`${a.symbol}: ${pct(a.underwater)} of volume underwater`}
               onClick={() => onSelect(a.id)}
+              onKeyDown={(event: KeyboardEvent<SVGCircleElement>) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onSelect(a.id);
+                }
+              }}
             />
           );
         })}

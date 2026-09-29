@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { SlimDataset } from "@/lib/types";
 import { pct, usd } from "@/lib/format";
 import { CostBasisMap, MarketIndexChart } from "./charts";
@@ -12,7 +13,28 @@ import { SelectionProvider } from "./selection";
 
 export function Dashboard({ dataset }: { dataset: SlimDataset }) {
   const [data, setData] = useState<SlimDataset>(dataset);
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedSymbol = searchParams.get("asset");
+
+  // Selection is URL-driven: `?asset=SYM` is shareable and survives refresh.
+  const selectedId = useMemo(() => {
+    if (!selectedSymbol) return null;
+    const match = data.assets.find(
+      (a) => a.symbol.toLowerCase() === selectedSymbol.toLowerCase(),
+    );
+    return match ? match.id : null;
+  }, [selectedSymbol, data.assets]);
+
+  const select = useCallback(
+    (id: number | null) => {
+      const symbol = id === null ? null : data.assets.find((a) => a.id === id)?.symbol ?? null;
+      const query = symbol ? `?asset=${encodeURIComponent(symbol)}` : "?";
+      router.replace(query, { scroll: false });
+    },
+    [data.assets, router],
+  );
+
   const [refresh, setRefresh] = useState<{ state: "idle" | "loading" | "error"; message?: string }>({
     state: "idle",
   });
@@ -21,10 +43,7 @@ export function Dashboard({ dataset }: { dataset: SlimDataset }) {
     text: "",
   });
 
-  const selection = useMemo(
-    () => ({ selectedId, select: (id: number | null) => setSelectedId(id) }),
-    [selectedId],
-  );
+  const selection = useMemo(() => ({ selectedId, select }), [selectedId, select]);
 
   const refreshLive = useCallback(async () => {
     setRefresh({ state: "loading" });
@@ -161,7 +180,7 @@ export function Dashboard({ dataset }: { dataset: SlimDataset }) {
               </h2>
               <span className="text-xs text-faint">click any asset</span>
             </div>
-            <CostBasisMap assets={data.assets} selectedId={selectedId} onSelect={setSelectedId} />
+            <CostBasisMap assets={data.assets} selectedId={selectedId} onSelect={select} />
             <p className="mt-2 text-xs leading-relaxed text-faint">
               Up = more of the asset&apos;s year traded above its current price (trapped buyers). Right = price
               above its cost basis (holders in profit). Bubble size = market cap, colour = sector. The

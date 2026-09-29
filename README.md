@@ -12,7 +12,7 @@ Built for the **Build with CMC: API Hackathon** — track: **Data & Visualisatio
 
 Every market page shows you a price. None of them show you what the people holding the asset actually paid. UNDERWATER reconstructs an aggregate **cost basis** for the top ~200 assets from one year of daily price × volume, then measures the part that now sits at a loss — the **underwater supply**.
 
-> At the time of writing: **50% of $33.3T** of traded volume in the last year changed hands above today's price, and **73%** of the tracked universe is trading below its cost basis. Memes are the most trapped sector (71%); Layer 1 the least (49%).
+> At the time of writing: **50% of $33.3T** of traded volume in the last year changed hands above today's price, and **73%** of the tracked universe is trading below its cost basis. Privacy (84%) and Gaming (78%) are the most trapped sectors; AI & Big Data (40%) the least.
 
 That is not visible anywhere in a normal price chart, and it is directly actionable: it quantifies the overhang of holders waiting to break even.
 
