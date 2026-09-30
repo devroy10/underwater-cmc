@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored registry components (shadcn/ui, bklit) are not authored here.
+    "components/ui/**",
+    "components/charts/**",
+    "components/shimmering-text.tsx",
+    "hooks/**",
   ]),
 ]);
 
