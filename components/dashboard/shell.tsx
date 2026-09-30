@@ -67,7 +67,11 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         <SidebarHeader className="h-16 justify-center border-b border-dashed">
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton size="lg" className="h-12" render={<Link href="/" />}>
+              <SidebarMenuButton
+                size="lg"
+                className="h-12 group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:justify-center"
+                render={<Link href="/" />}
+              >
                 <Image
                   src="/icon-192.png"
                   alt="Underwater"
@@ -92,15 +96,18 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                 const active =
                   item.href === "/dashboard" ? pathname === item.href : pathname.startsWith(item.href);
                 return (
-                  <SidebarMenuItem key={item.href}>
+                  <SidebarMenuItem
+                    key={item.href}
+                    className="border-b border-dashed last:border-b-0 group-data-[collapsible=icon]:border-b-0"
+                  >
                     <SidebarMenuButton
                       isActive={active}
                       tooltip={item.label}
-                      className="h-10"
+                      className="h-14 gap-3 text-[15px] font-medium [&_svg]:size-[18px]! group-data-[collapsible=icon]:mx-auto group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0! group-data-[collapsible=icon]:[&_svg]:size-5!"
                       render={<Link href={item.href} />}
                     >
-                      <item.icon />
-                      <span>{item.label}</span>
+                      <item.icon strokeWidth={1.5} />
+                      <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
