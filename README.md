@@ -1,120 +1,236 @@
+<p align="center">
+  <img src="public/media/banner.png" alt="UNDERWATER" width="760" />
+</p>
+<p align="center">
+  <strong>The market's hidden cost basis.</strong>
+</p>
+<p align="center">
+  UNDERWATER rebuilds the aggregate cost basis of the top crypto assets from one year of CoinMarketCap daily price and volume data. Then it shows how much of the traded supply sits at a loss.
+</p>
+<p align="center">
+  <a href="#how-it-works">How it works</a>
+  ·
+  <a href="#the-metric">The metric</a>
+  ·
+  <a href="#quickstart">Quickstart</a>
+  ·
+  <a href="#endpoints">Endpoints</a>
+  ·
+  <a href="#api-feedback">API feedback</a>
+  ·
+  <a href="docs/demo.mp4">Demo</a>
+  ·
+  <a href="docs/ENDPOINTS.md">Endpoint details</a>
+</p>
+
+---
+
 # UNDERWATER
 
-**The market's hidden cost basis.** Where is the supply that must be absorbed before price can travel?
+UNDERWATER is a market analysis tool. A price chart shows the current price. It does not show what the holders paid. UNDERWATER estimates the average entry price of the market. Then it measures the part of that supply that is below the current price.
 
-Built for the **Build with CMC: API Hackathon** — track: **Data & Visualisation**.
+The tool covers the top 200 assets by market cap. It uses one year of daily data from the CoinMarketCap API. It computes the volume-weighted average price (VWAP) for each asset. It calls the share of volume above the current price the "underwater supply".
 
-**Live:** https://underwater-cmc.vercel.app
+At the time of writing, 50 percent of 33.3 trillion US dollars of traded volume is underwater. 73 percent of the tracked universe is below its cost basis. Privacy (84 percent) and Gaming (78 percent) are the most trapped sectors. AI and Big Data (40 percent) is the least trapped.
 
-▶ **[Watch the 81-second demo](docs/demo.mp4)** · [script](docs/DEMO_SCRIPT.md) · [endpoints](docs/ENDPOINTS.md) · [API feedback](docs/API_FEEDBACK.md)
+UNDERWATER shows this structure in one view. It is an estimate that uses VWAP as a proxy.
+
+## Contents
+
+- [How it works](#how-it-works)
+- [The metric](#the-metric)
+- [What it shows](#what-it-shows)
+- [Live demo](#live-demo)
+- [Quickstart](#quickstart)
+- [Setup](#setup)
+- [Endpoints](#endpoints)
+- [Evidence of a real API call](#evidence-of-a-real-api-call)
+- [API feedback](#api-feedback)
+- [Stack](#stack)
+- [Project layout](#project-layout)
+- [Scope](#scope)
+- [Development](#development)
+- [Track](#track)
+- [License](#license)
+
+## How it works
+
+1. **Fetch.** The server gets the top 200 assets from `listings/latest`. It reads the price, the volume, and the tags.
+2. **Get history.** The server gets 365 daily points for each asset from `quotes/historical`. Each point has a price and a volume.
+3. **Compute.** The engine computes the volume-weighted average price for each asset over the window.
+4. **Measure.** The engine measures the share of volume that traded above the current price. That share is the underwater supply.
+5. **Aggregate.** The engine builds a market index, a sector summary, and a portfolio view.
+6. **Render.** The dashboard shows the results. A snapshot is bundled with the repository, so the demo always runs.
+
+A full build costs about 715 credits and takes about 27 seconds.
+
+## The metric
+
+The engine computes three values for each asset over the 365-day window.
+
+$$
+\text{cost basis} = \frac{\sum \text{price}_i \cdot \text{volume}_i}{\sum \text{volume}_i}
+$$
+
+$$
+\text{underwater} = \frac{\sum \text{volume}_i\, [\text{price}_i > \text{price}_{\text{now}}]}{\sum \text{volume}_i}
+$$
+
+$$
+\text{pain depth} = \text{volume-weighted average loss of the underwater portion}
+$$
+
+The first formula is the volume-weighted average price (VWAP). The second is the share of traded volume above the current price. The third is the loss that the underwater part carries.
+
+A high underwater value means most of the year's trading occurred above the current price. The average holder of that volume holds a loss. This is latent sell pressure.
+
+**Why the tool uses VWAP.** The CoinMarketCap API returns price and 24-hour volume. It does not return the realised entry price or holder groups. VWAP is the standard proxy for the aggregate cost basis. The dashboard states this. The [API feedback](#api-feedback) section gives more detail.
+
+Stablecoins are excluded, because the peg makes the metric meaningless. Assets with fewer than 120 daily points are dropped.
+
+## What it shows
+
+- **Market Underwater Index.** This chart shows the trailing cost basis of the whole market. It includes a breadth line and a Fear and Greed overlay.
+- **Cost-basis map.** This plot places each asset by price against cost basis, and by underwater share. The bottom right corner is clean air. The top left corner is a wall of trapped holders.
+- **Asset explorer.** You can search, filter, and sort the universe by underwater supply.
+- **Asset drawer.** This panel shows a volume-by-price profile, a price against cost basis sparkline, and a peer comparison.
+- **Portfolio cost basis.** Enter a portfolio as `SYMBOL value` on each line. The tool returns the value-weighted underwater share.
+- **Live refresh.** This button pulls a fresh universe from the CoinMarketCap API.
+- **Deep links.** Each asset has a URL, for example `?asset=DOGE`. The drawer has a copy link button.
 
 ![UNDERWATER dashboard](docs/screenshot.png)
 
-## The insight
+## Live demo
 
-Every market page shows you a price. None of them show you what the people holding the asset actually paid. UNDERWATER reconstructs an aggregate **cost basis** for the top ~200 assets from one year of daily price × volume, then measures the part that now sits at a loss — the **underwater supply**.
+- Live dashboard: https://underwater-cmc.vercel.app
+- Demo video: [docs/demo.mp4](docs/demo.mp4) (81 seconds, narrated)
+- Demo script: [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md)
 
-> At the time of writing: **50% of $33.3T** of traded volume in the last year changed hands above today's price, and **73%** of the tracked universe is trading below its cost basis. Privacy (84%) and Gaming (78%) are the most trapped sectors; AI & Big Data (40%) the least.
+## Quickstart
 
-That is not visible anywhere in a normal price chart, and it is directly actionable: it quantifies the overhang of holders waiting to break even.
-
-## What it does
-
-- **Market Underwater Index** — a trailing cost-basis oscillator for the whole market, with a breadth line and a Fear & Greed overlay.
-- **The cost-basis map** — every asset plotted by *price vs cost basis* (x) and *share of volume underwater* (y). Bottom-right is "clean air"; top-left is a wall of trapped holders.
-- **Asset explorer** — search / filter / sort the universe by underwater supply.
-- **Asset drawer** — a volume-by-price profile, a price-vs-running-cost-basis sparkline, and peer comparison for any asset.
-- **Portfolio cost basis** — paste a portfolio as `SYMBOL value` and see its value-weighted underwater share and where the pain is concentrated.
-- **Live refresh** — pull a fresh universe straight from the CoinMarketCap API.
-
-## How the metric works
-
-For each asset, over the trailing window (365 daily observations):
-
-```
-cost basis  = Σ(priceᵢ · volumeᵢ) / Σ(volumeᵢ)          # volume-weighted average price (VWAP)
-
-underwater  = Σ volumeᵢ [priceᵢ > price_now] / Σ volumeᵢ  # share of traded volume above today's price
-
-pain depth  = volume-weighted average loss of the underwater portion
+```bash
+git clone https://github.com/devroy10/underwater-cmc.git
+cd underwater-cmc
+bun install
+echo "CMC_API_KEY=your_key" > .env.local
+bun run dev
 ```
 
-A large `underwater` means most of the year's trading happened **above** the current price — i.e. the marginal holder is holding a loss, which is latent sell pressure.
+Open http://localhost:3000.
 
-**Why VWAP is a proxy.** CoinMarketCap exposes price and 24h volume but not realised entry price or holder cohorts, so VWAP is used as the standard proxy for the market's aggregate cost basis. This is stated in-app and is the subject of the API feedback below. Stablecoins are excluded (the peg makes the metric meaningless) and assets with fewer than 120 daily observations are dropped.
+## Setup
 
-## Endpoints used
+| Variable | Required | Purpose |
+|---|---|---|
+| `CMC_API_KEY` | Yes | CoinMarketCap Pro API key. The server uses it for all live calls. |
+| `GOOGLE_API_KEY` | No | Enables the "Analyst read" button. The button uses Gemini to write a short note about the current numbers. |
 
-| Endpoint | Why |
-|---|---|
-| `GET /v1/cryptocurrency/listings/latest` | Universe, current quotes, tags → sectors, volumes |
-| `GET /v1/cryptocurrency/quotes/historical` | 365 daily price + volume points per asset (the core input) |
-| `GET /v3/fear-and-greed/historical` | Sentiment overlay on the market index |
-| `GET /v1/global-metrics/quotes/latest` | Market-wide context (total cap, BTC dominance) |
+To regenerate the snapshot from live data:
 
-Full details, parameters, credit costs and example calls: [`docs/ENDPOINTS.md`](docs/ENDPOINTS.md).
+```bash
+bun run build:dataset
+```
+
+The last run used 197 assets, 715 credits, and 27 seconds.
+
+Run the checks:
+
+```bash
+bun run typecheck
+bun run lint
+```
+
+## Endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/v1/cryptocurrency/listings/latest` | Universe, current quotes, tags for sectors, volumes |
+| GET | `/v1/cryptocurrency/quotes/historical` | 365 daily price and volume points for each asset |
+| GET | `/v3/fear-and-greed/historical` | Sentiment overlay for the market index |
+| GET | `/v1/global-metrics/quotes/latest` | Market-wide context, such as total cap and Bitcoin dominance |
+
+Full parameters, credit costs, and example calls: [docs/ENDPOINTS.md](docs/ENDPOINTS.md).
 
 ## Evidence of a real API call
 
-Every figure ships with the raw response that produced it. Captured live against the hackathon key:
-
-```
-curl https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=2 \
-  --header 'X-CMC_PRO_API_KEY: <key>'
-```
-
-Response (trimmed): [`evidence/listings.sample.json`](evidence/listings.sample.json) — `status.credit_count: 1`.
-
-```
-curl https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/historical?id=1&interval=daily&count=3 \
-  --header 'X-CMC_PRO_API_KEY: <key>'
-```
-
-Response: [`evidence/history.sample.json`](evidence/history.sample.json) — the daily rows the metric is built from.
-
-The full dataset build is reproducible:
+Each figure comes with the raw response that produced it. These calls ran against the hackathon key.
 
 ```bash
-npm run build:dataset      # hits the API, writes data/underwater-snapshot.json
-# last run: 197 assets · 715 credits · 26.9s
+curl "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=2" \
+  --header "X-CMC_PRO_API_KEY: <key>"
 ```
 
-## What the API made possible / where it got in the way
+Response: [evidence/listings.sample.json](evidence/listings.sample.json). The status object reports `credit_count: 1`.
 
-**Made possible:** `quotes/historical` gives a clean, long, aligned daily series across the whole universe with a single batched call per 20 assets — enough to reconstruct a market-wide cost basis without any on-chain infrastructure. That is what makes this metric possible at all.
+```bash
+curl "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/historical?id=1&interval=daily&count=3" \
+  --header "X-CMC_PRO_API_KEY: <key>"
+```
 
-**In the way:** the plan caps history at **12 months** (a multi-cycle cost basis needs a higher tier); `quotes/historical` is billed per returned row, so a full 10k-asset universe is expensive (the top 200 costs ~715 credits); and there is **no field for realised entry price or holder cohorts**, so VWAP is a proxy. Full write-up: [`docs/API_FEEDBACK.md`](docs/API_FEEDBACK.md).
+Response: [evidence/history.sample.json](evidence/history.sample.json). These are the daily rows that the metric uses.
+
+The build is reproducible:
+
+```bash
+bun run build:dataset   # calls the API and writes data/underwater-snapshot.json
+```
+
+## API feedback
+
+**What the API made possible.** `quotes/historical` returns one long, aligned daily series for many assets. One request can return 20 assets. This is enough to rebuild a market-wide cost basis without on-chain data.
+
+**Where the API got in the way.**
+
+- The plan limits history to 12 months. A full cycle needs a higher tier.
+- `quotes/historical` bills for each returned row. A 10,000 asset universe is expensive. The top 200 costs about 715 credits.
+- There is no field for realised entry price or holder groups. VWAP is a proxy, not ground truth.
+- `listing_status=inactive` returns active coins. Survivorship analysis is not possible.
+- Several endpoints in the hackathon brief return HTTP 403 on the provided plan, for example `market-pairs`, `ohlcv`, and `derivatives`.
+- The MCP server lists tools, but `tools/call` returns `Token not found` with the same key.
+
+Full write-up with reproduction steps: [docs/API_FEEDBACK.md](docs/API_FEEDBACK.md).
 
 ## Stack
 
-Next.js 16 (App Router, React 19, TypeScript strict) · Tailwind v4 · hand-built SVG charts (no charting dependency) · a pure, testable metrics engine in `lib/underwater.ts`.
+Next.js 16 (App Router, React 19, TypeScript) with Tailwind v4. The charts are hand-built SVG. There is no charting library. The package manager is bun.
+
+## Project layout
 
 ```
-lib/cmc.ts         typed CMC client: auth, retries, sliding-window rate limiter, batching
-lib/underwater.ts  the metrics engine (pure functions, no I/O)
-lib/dataset.ts     bundled snapshot + live builder
+lib/cmc.ts         CMC client: auth, retries, rate limiter, batching
+lib/underwater.ts  metrics engine (pure functions, no I/O)
+lib/dataset.ts     bundled snapshot and live builder
 scripts/           reproducible dataset build
 components/        SVG charts, explorer, drawer, portfolio, panels
-app/api/*          asset detail, live refresh, optional AI "analyst read"
+app/api/*          asset detail, live refresh, optional analyst read
 ```
 
-## Run locally
+## Scope
+
+- The metric uses VWAP as a proxy for the cost basis. It is an estimate.
+- The plan limits history to 12 months. The result depends on the window.
+- Stablecoins are excluded. Assets with fewer than 120 daily points are dropped.
+- The analyst read needs `GOOGLE_API_KEY`. Without it, the button returns a message.
+- This tool is not investment advice. Data is copyright CoinMarketCap.
+
+## Development
 
 ```bash
-npm install
-echo "CMC_API_KEY=your_key" > .env.local
-npm run build:dataset   # optional: regenerate the snapshot from live data
-npm run dev             # http://localhost:3000
+bun run dev             # development server on http://localhost:3000
+bun run build           # production build
+bun run build:dataset   # regenerate the snapshot from the live API
+bun run typecheck       # TypeScript check
+bun run lint            # ESLint
 ```
 
-`npm run typecheck` and `npm run lint` are clean.
+Deploy with Vercel. Vercel reads `bun.lock` and installs with bun. Set `CMC_API_KEY` and `GOOGLE_API_KEY` in the project environment.
 
 ## Track
 
-**Data & Visualisation.**
+Data and Visualisation.
 
-## Disclaimer
+## License
 
-Not investment advice. Data © CoinMarketCap. The metric is an estimate built on a VWAP proxy.
+MIT. See [LICENSE](LICENSE).
 
 `#BuildwithCMC`
