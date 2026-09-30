@@ -1,19 +1,31 @@
-import { Suspense } from "react";
-import { Dashboard } from "@/components/Dashboard";
-import { getSnapshot } from "@/lib/dataset";
-import { toSlim } from "@/lib/underwater";
+import { CtaSection } from "@/components/landing/cta-section";
+import { DeveloperSection } from "@/components/landing/developer-section";
+import { FactMarquee } from "@/components/landing/fact-marquee";
+import { FeaturesSection } from "@/components/landing/features-section";
+import { FindingsSection } from "@/components/landing/findings-section";
+import { HeroSection } from "@/components/landing/hero-section";
+import { SiteFooter } from "@/components/landing/site-footer";
+import { SiteHeader } from "@/components/landing/site-header";
+import {
+  MobileStatsSection,
+  StatsSection,
+} from "@/components/landing/stats-section";
 
-/**
- * The dashboard is a Server Component: it reads the bundled snapshot at build
- * time (zero API calls, always renders) and hydrates the interactive charts
- * with a slim, serialized dataset. `useSearchParams` (deep links) requires a
- * Suspense boundary.
- */
-export default function Page() {
-  const dataset = getSnapshot();
+export default function Home() {
   return (
-    <Suspense fallback={null}>
-      <Dashboard dataset={toSlim(dataset)} />
-    </Suspense>
+    <div className="flex min-h-screen flex-col bg-white">
+      <SiteHeader />
+      <main className="flex flex-1 flex-col">
+        <HeroSection />
+        <FactMarquee />
+        <FeaturesSection />
+        <StatsSection />
+        <FindingsSection />
+        <MobileStatsSection />
+        <DeveloperSection />
+        <CtaSection />
+      </main>
+      <SiteFooter />
+    </div>
   );
 }

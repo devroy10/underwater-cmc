@@ -1,33 +1,52 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
+import localFont from "next/font/local";
+import { metadata as siteMetadata } from "@/lib/landing/site";
+import { Providers } from "./providers";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "UNDERWATER — the market's hidden cost basis",
-  description:
-    "An open map of how much of the crypto market's past-year traded volume is underwater, built on the CoinMarketCap API.",
-  openGraph: {
-    title: "UNDERWATER",
-    description: "Where is the supply that must be absorbed before price can travel?",
-    type: "website",
-  },
-};
+const acidGrotesk = localFont({
+  src: [
+    {
+      path: "../public/fonts/FFFAcidGrotesk-Normal.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/FFFAcidGrotesk-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-display",
+  display: "swap",
+});
+
+export const metadata: Metadata = siteMetadata;
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html
+      lang="en"
+      className={`${inter.variable} ${geistMono.variable} ${acidGrotesk.variable} h-full antialiased`}
+    >
+      <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
