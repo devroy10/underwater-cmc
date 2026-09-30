@@ -44,7 +44,7 @@ async function main(): Promise<void> {
 
   const universe = Number(process.env.UNIVERSE ?? "200");
   const windowDays = Number(process.env.WINDOW_DAYS ?? "365");
-  console.log(`Fetching live data — universe=${universe}, window=${windowDays}d ...`);
+  console.log(`Fetching live data: universe=${universe}, window=${windowDays}d ...`);
 
   const started = Date.now();
   const { dataset, credits, errors } = await buildLiveDataset({ universe, windowDays });

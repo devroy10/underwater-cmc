@@ -48,7 +48,7 @@ export async function buildLiveDataset(options?: {
 
   const listingsResult = await fetchListings(universe);
   if (!listingsResult.ok) {
-    throw new Error(`listings/latest failed — ${listingsResult.message}`);
+    throw new Error(`listings/latest failed: ${listingsResult.message}`);
   }
   credits += listingsResult.credits;
   const listings = listingsResult.data;

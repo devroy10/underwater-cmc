@@ -1,5 +1,5 @@
 /**
- * The UNDERWATER metrics engine. Pure functions only — no I/O — so the whole
+ * The UNDERWATER metrics engine. Pure functions only, with no I/O, so the whole
  * model is unit-testable and safe to run on the server or in a worker.
  *
  * Definitions (also surfaced in the UI methodology panel):
@@ -12,8 +12,8 @@
  *                                   Σ volume_i
  *                          i.e. the share of the window's traded volume that
  *                          changed hands ABOVE today's price. Those are the
- *                          buyers currently holding a loss — the supply that
- *                          must be absorbed before price can travel.
+ *                          buyers currently holding a loss. This is the supply
+ *                          that must be absorbed before price can travel.
  *
  *   painDepth(a)         = volume-weighted average loss of that underwater
  *                          portion, in fractional terms.

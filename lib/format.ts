@@ -9,7 +9,7 @@ const COMPACT = new Intl.NumberFormat("en-US", {
 
 /** $1.2T / $34.5B / $9.9M / $12.3K */
 export function usd(value: number): string {
-  if (!Number.isFinite(value)) return "—";
+  if (!Number.isFinite(value)) return "n/a";
   const abs = Math.abs(value);
   if (abs >= 1_000) return `$${COMPACT.format(value)}`;
   if (abs >= 1) return `$${value.toFixed(2)}`;
@@ -27,23 +27,28 @@ export function usdExact(value: number): string {
 
 /** 0.43 -> "43%" */
 export function pct(fraction: number, digits = 0): string {
-  if (!Number.isFinite(fraction)) return "—";
+  if (!Number.isFinite(fraction)) return "n/a";
   return `${(fraction * 100).toFixed(digits)}%`;
 }
 
 /** 0.43 -> "+43%" */
 export function signedPct(fraction: number, digits = 0): string {
-  if (!Number.isFinite(fraction)) return "—";
+  if (!Number.isFinite(fraction)) return "n/a";
   const v = (fraction * 100).toFixed(digits);
   return `${fraction >= 0 ? "+" : ""}${v}%`;
 }
 
 export function num(value: number, digits = 0): string {
-  if (!Number.isFinite(value)) return "—";
+  if (!Number.isFinite(value)) return "n/a";
   return value.toLocaleString("en-US", {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   });
+}
+
+/** CoinMarketCap token logo, served from their CDN. */
+export function cmcLogoUrl(id: number): string {
+  return `https://s2.coinmarketcap.com/static/img/coins/64x64/${id}.png`;
 }
 
 export function shortDate(iso: string): string {

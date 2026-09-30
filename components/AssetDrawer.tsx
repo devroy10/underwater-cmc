@@ -1,157 +1,212 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { AssetDetail } from "@/lib/types";
-import { SECTOR_COLORS, pct, signedPct, underwaterColor, usdExact } from "@/lib/format";
+import { useState } from "react";
+import { pct, signedPct, underwaterColor, usdExact } from "@/lib/format";
+import { useAssetSelection } from "@/lib/dashboard/state";
+import { useAssetDetail } from "@/lib/dashboard/queries";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { TokenLogo } from "@/components/dashboard/token-logo";
+import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Sparkline, VolumeProfile } from "./charts";
-import { useSelection } from "./selection";
 
 export function AssetDrawer() {
-  const { selectedId, select } = useSelection();
-  const [detail, setDetail] = useState<AssetDetail | null>(null);
-  const [errorId, setErrorId] = useState<number | null>(null);
+  const isMobile = useIsMobile();
+  const { selectedId, select } = useAssetSelection();
+  const { data, isLoading, isError } = useAssetDetail(selectedId);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    if (selectedId === null) return;
-    const controller = new AbortController();
-    fetch(`/api/asset?id=${selectedId}`, { signal: controller.signal })
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return (await res.json()) as AssetDetail;
-      })
-      .then((data) => setDetail(data))
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        setErrorId(selectedId);
-      });
-    return () => controller.abort();
-  }, [selectedId]);
+  const asset = data?.asset;
+  const open = selectedId !== null;
 
-  useEffect(() => {
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") select(null);
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/dashboard?asset=${selectedId}`,
+      );
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* clipboard unavailable */
     }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [select]);
+  }
 
-  if (selectedId === null) return null;
+  const body = (
+    <div className="flex flex-col gap-5 px-4 pb-6">
+      <div className="flex gap-2">
+        <Button variant="outline" size="sm" onClick={copyLink} disabled={!asset}>
+          {copied ? "Copied" : "Copy link"}
+        </Button>
+      </div>
 
-  // Ignore a stale payload from a previously selected asset.
-  const asset = detail && detail.asset.id === selectedId ? detail.asset : undefined;
-  const loading = asset === undefined && errorId !== selectedId;
-  const errored = errorId === selectedId;
-
-  return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <button
-        aria-label="Close"
-        className="absolute inset-0 bg-abyss/70 backdrop-blur-sm"
-        onClick={() => select(null)}
-      />
-      <aside className="relative h-full w-full max-w-[440px] overflow-y-auto border-l border-line bg-panel p-6 shadow-2xl">
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span
-                className="inline-block h-2.5 w-2.5 rounded-full"
-                style={{ background: asset ? SECTOR_COLORS[asset.sector] : "#7f95a9" }}
-              />
-              <h2 className="text-2xl font-semibold">{asset?.symbol ?? "…"}</h2>
-            </div>
-            <p className="text-sm text-muted">{asset?.name ?? "Loading"}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={async () => {
-                if (!asset) return;
-                try {
-                  await navigator.clipboard.writeText(`${window.location.origin}/?asset=${asset.symbol}`);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 1500);
-                } catch {
-                  /* clipboard unavailable */
-                }
-              }}
-              className="rounded-md border border-line px-2 py-1 text-xs text-muted hover:text-ink"
-            >
-              {copied ? "Copied" : "Copy link"}
-            </button>
-            <button
-              onClick={() => select(null)}
-              className="rounded-md border border-line px-2 py-1 text-xs text-muted hover:text-ink"
-            >
-              Esc
-            </button>
-          </div>
+      {isLoading ? (
+        <div className="flex flex-col gap-4">
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-16 w-full" />
+          <Skeleton className="h-40 w-full" />
         </div>
+      ) : null}
 
-        {loading ? <p className="mt-8 text-sm text-muted">Loading asset…</p> : null}
-        {errored ? <p className="mt-8 text-sm text-trapped">Could not load asset.</p> : null}
+      {isError ? (
+        <p className="text-sm text-destructive">Could not load this asset.</p>
+      ) : null}
 
-        {asset ? (
-          <div className="mt-6 flex flex-col gap-5">
-            <div className="grid grid-cols-2 gap-3">
-              <Stat label="Underwater" value={pct(asset.underwater)} tone="trapped" />
-              <Stat label="vs cost basis" value={signedPct(asset.priceVsVwap, 1)} />
-              <Stat label="Trailing cost basis" value={usdExact(asset.vwap)} />
-              <Stat label="Price" value={usdExact(asset.price)} />
-              <Stat label="Pain depth" value={pct(asset.painDepth, 1)} />
-              <Stat label="Rank" value={`#${asset.rank}`} />
+      {asset ? (
+        <>
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="Underwater" value={pct(asset.underwater)} tone="underwater" />
+            <Stat label="vs cost basis" value={signedPct(asset.priceVsVwap, 1)} />
+            <Stat label="Trailing cost basis" value={usdExact(asset.vwap)} />
+            <Stat label="Price" value={usdExact(asset.price)} />
+            <Stat label="Pain depth" value={pct(asset.painDepth, 1)} />
+            <Stat label="Rank" value={`#${asset.rank}`} />
+          </div>
+
+          <p className="border bg-muted/40 p-3 text-sm leading-relaxed text-muted-foreground">
+            {pct(asset.underwater)} of the last year&apos;s traded volume changed hands above{" "}
+            <span className="tabular text-foreground">{usdExact(asset.price)}</span>. Those buyers
+            hold an average loss of{" "}
+            <span className="tabular text-foreground">{pct(asset.painDepth, 1)}</span>.
+          </p>
+
+          <section>
+            <h3 className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
+              Price vs cost basis (12m)
+            </h3>
+            <Sparkline
+              price={asset.priceSeries}
+              vwap={asset.vwapSeries}
+              color={underwaterColor(asset.underwater)}
+            />
+            <div className="mt-1 flex flex-col text-[11px] text-muted-foreground">
+              <span>solid = price</span>
+              <span>dashed = running volume-weighted cost basis</span>
             </div>
+          </section>
 
-            <p className="rounded-lg border border-line bg-panel-2/60 p-3 text-sm leading-relaxed text-muted">
-              {pct(asset.underwater)} of the last year&apos;s traded volume changed hands above{" "}
-              <span className="tabular text-ink">{usdExact(asset.price)}</span> — buyers holding an average
-              loss of <span className="tabular text-ink">{pct(asset.painDepth, 1)}</span>.
-            </p>
+          <Separator />
 
-            <section>
-              <h3 className="mb-2 text-xs uppercase tracking-wider text-faint">Price vs cost basis (12m)</h3>
-              <Sparkline price={asset.priceSeries} vwap={asset.vwapSeries} color={underwaterColor(asset.underwater)} />
-              <p className="mt-1 text-[11px] text-faint">
-                solid = price · dashed = running volume-weighted cost basis
-              </p>
-            </section>
+          <section>
+            <h3 className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
+              Where the volume traded
+            </h3>
+            <VolumeProfile buckets={asset.profile} price={asset.price} vwap={asset.vwap} />
+          </section>
 
-            <section>
-              <h3 className="mb-2 text-xs uppercase tracking-wider text-faint">Where the volume traded</h3>
-              <VolumeProfile buckets={asset.profile} price={asset.price} vwap={asset.vwap} />
-            </section>
-
-            {detail && asset && detail.peer.length > 0 ? (
+          {data && data.peer.length > 0 ? (
+            <>
+              <Separator />
               <section>
-                <h3 className="mb-2 text-xs uppercase tracking-wider text-faint">
+                <h3 className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
                   Same sector · {asset.sector}
                 </h3>
                 <ul className="flex flex-col gap-1.5">
-                  {detail.peer.map((peer) => (
+                  {data.peer.map((peer) => (
                     <li key={peer.id}>
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-between"
                         onClick={() => select(peer.id)}
-                        className="flex w-full items-center justify-between rounded-md border border-transparent px-2 py-1.5 text-sm hover:border-line hover:bg-panel-2"
                       >
-                        <span className="text-ink">{peer.symbol}</span>
-                        <span className="tabular text-muted">{pct(peer.underwater)}</span>
-                      </button>
+                        <span className="flex items-center gap-2">
+                          <TokenLogo id={peer.id} symbol={peer.symbol} size={16} />
+                          {peer.symbol}
+                        </span>
+                        <span className="tabular text-muted-foreground">{pct(peer.underwater)}</span>
+                      </Button>
                     </li>
                   ))}
                 </ul>
               </section>
-            ) : null}
-          </div>
-        ) : null}
-      </aside>
+            </>
+          ) : null}
+        </>
+      ) : null}
     </div>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer
+        open={open}
+        onOpenChange={(next) => {
+          if (!next) select(null);
+        }}
+        swipeDirection="down"
+        showSwipeHandle
+      >
+        <DrawerContent>
+          <DrawerHeader>
+            <div className="flex items-center gap-2">
+              {asset ? (
+                <TokenLogo id={asset.id} symbol={asset.symbol} size={28} />
+              ) : (
+                <Skeleton className="size-7 rounded-full" />
+              )}
+              <DrawerTitle>{asset?.symbol ?? "Asset"}</DrawerTitle>
+            </div>
+            <DrawerDescription>{asset?.name ?? "Loading"}</DrawerDescription>
+          </DrawerHeader>
+          <div className="min-h-0 flex-1 overflow-y-auto">{body}</div>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Sheet
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) select(null);
+      }}
+    >
+      <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-md">
+        <SheetHeader>
+          <div className="flex items-center gap-2">
+            {asset ? (
+              <TokenLogo id={asset.id} symbol={asset.symbol} size={28} />
+            ) : (
+              <Skeleton className="size-7 rounded-full" />
+            )}
+            <SheetTitle>{asset?.symbol ?? "Asset"}</SheetTitle>
+          </div>
+          <SheetDescription>{asset?.name ?? "Loading"}</SheetDescription>
+        </SheetHeader>
+        {body}
+      </SheetContent>
+    </Sheet>
   );
 }
 
-function Stat({ label, value, tone }: { label: string; value: string; tone?: "trapped" }) {
+function Stat({ label, value, tone }: { label: string; value: string; tone?: "underwater" }) {
   return (
-    <div className="rounded-lg border border-line bg-panel-2/50 p-3">
-      <div className="text-[11px] uppercase tracking-wider text-faint">{label}</div>
-      <div className={`tabular mt-1 text-lg ${tone === "trapped" ? "text-trapped" : "text-ink"}`}>{value}</div>
+    <div className="border bg-card p-3">
+      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div
+        className={
+          tone === "underwater"
+            ? "tabular mt-1 text-lg text-underwater"
+            : "tabular mt-1 text-lg text-foreground"
+        }
+      >
+        {value}
+      </div>
     </div>
   );
 }
