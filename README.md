@@ -4,6 +4,8 @@
 
 Built for the **Build with CMC: API Hackathon** — track: **Data & Visualisation**.
 
+**Live:** https://underwater-cmc.vercel.app
+
 ▶ **[Watch the 81-second demo](docs/demo.mp4)** · [script](docs/DEMO_SCRIPT.md) · [endpoints](docs/ENDPOINTS.md) · [API feedback](docs/API_FEEDBACK.md)
 
 ![UNDERWATER dashboard](docs/screenshot.png)
