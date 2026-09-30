@@ -6,13 +6,13 @@ key.
 
 ## Worked well
 
-- **`quotes/historical` with `id=a,b,c`** — batched, aligned daily series across
+- **`quotes/historical` with `id=a,b,c`**: batched, aligned daily series across
   many assets with one request per 20. This single design choice is what makes a
   market-wide cost-basis reconstruction possible without any on-chain infra.
-- **Rich `listings/latest` rows** — `tags`, the `cex_volume_24h`/`dex_volume_24h`
+- **Rich `listings/latest` rows**: `tags`, the `cex_volume_24h`/`dex_volume_24h`
   split, `fully_diluted_market_cap` and `minted_market_cap` are far more than a
   price endpoint usually returns.
-- **`/v3/fear-and-greed/historical`** — 400 days of sentiment, cheap (1 credit),
+- **`/v3/fear-and-greed/historical`**: 400 days of sentiment, cheap (1 credit),
   and undocumented in the obvious place. A quiet gem.
 
 ## Friction
@@ -21,11 +21,11 @@ key.
 `quotes/historical` with `time_start` older than a year returns:
 
 ```
-400 — Your plan allows 12 months of historical access. Please upgrade your plan
+400: Your plan allows 12 months of historical access. Please upgrade your plan
 or choose a startDate that is newer than 2025-09-28T...
 ```
 
-A cost-basis metric wants a full cycle (≥ 3–4 years) to be trustworthy. The cap
+A cost-basis metric wants a full cycle (>= 3 to 4 years) to be trustworthy. The cap
 makes the "underwater" number regime-dependent. A 24-month window even on the
 Startup tier would materially improve the product.
 
@@ -45,7 +45,7 @@ ground truth instead of an estimate.
 
 ### 4. `listing_status=inactive` appears to be ignored
 `/v1/cryptocurrency/listings/latest?listing_status=inactive` returned **BTC,
-ETH, USDT, …** — the active set, not delisted assets. I could not build
+ETH, USDT, …**: the active set, not delisted assets. I could not build
 survivorship / token-mortality analysis. Either the filter is a no-op on this
 plan or the parameter name has changed; the docs still list it.
 
@@ -56,7 +56,7 @@ curl ".../v1/cryptocurrency/listings/latest?listing_status=inactive&limit=5"
 
 ### 5. Suggested endpoints are not on the suggested plan
 The hackathon brief points at OHLCV, derivatives and exchange data, but on the
-provided tier these return `403 — Your API Key subscription plan doesn't support
+provided tier these return `403: Your API Key subscription plan doesn't support
 this endpoint`:
 
 `/v1/cryptocurrency/trending/*`, `/v1/cryptocurrency/market-pairs/*`,
@@ -87,7 +87,7 @@ which token is expected.
   `latest` has it), so "stablecoin dry powder over time" can't be charted.
 - `listings/historical` (rank snapshots by date) 400s on this plan, so rank-churn
   / index-turnover studies aren't possible.
-- `categories` is a current snapshot only — no history — so a narrative-rotation
+- `categories` is a current snapshot only, with no history, so a narrative-rotation
   chart has to be reconstructed from per-coin history.
 - `self_reported_circulating_supply` is null for ~31% of the top 500, limiting
   supply-integrity checks.

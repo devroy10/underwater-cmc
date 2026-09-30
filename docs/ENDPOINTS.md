@@ -8,7 +8,7 @@ All calls are `GET` against `https://pro-api.coinmarketcap.com` with the
 
 ## 1. `/v1/cryptocurrency/listings/latest`
 
-**Purpose:** the universe — identity, current quote, tags, volumes.
+**Purpose:** the universe: identity, current quote, tags, volumes.
 
 **Parameters used:** `limit=200`, `start=1`, `sort=market_cap`,
 `sort_dir=desc`, `cryptocurrency_type=all`.
@@ -33,7 +33,7 @@ Sample: [`../evidence/listings.sample.json`](../evidence/listings.sample.json).
 
 ## 2. `/v1/cryptocurrency/quotes/historical`
 
-**Purpose:** the core input — a daily price + volume series per asset.
+**Purpose:** the core input: a daily price + volume series per asset.
 
 **Parameters used:** `id=a,b,c,...` (up to 20 per call), `interval=daily`,
 `count=365`.

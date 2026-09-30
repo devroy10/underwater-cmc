@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="public/media/banner.png" alt="UNDERWATER" width="760" />
+  <img src="public/media/banner.png" alt="Underwater" width="760" />
 </p>
 <p align="center">
   <strong>The market's hidden cost basis.</strong>
 </p>
 <p align="center">
-  UNDERWATER rebuilds the aggregate cost basis of the top crypto assets from one year of CoinMarketCap daily price and volume data. Then it shows how much of the traded supply sits at a loss.
+  Underwater rebuilds the aggregate cost basis of the top crypto assets from one year of CoinMarketCap daily price and volume data. Then it shows how much of the traded supply sits at a loss.
 </p>
 <p align="center">
   <a href="#how-it-works">How it works</a>
@@ -25,15 +25,15 @@
 
 ---
 
-# UNDERWATER
+# Underwater
 
-UNDERWATER is a market analysis tool. A price chart shows the current price. It does not show what the holders paid. UNDERWATER estimates the average entry price of the market. Then it measures the part of that supply that is below the current price.
+Underwater is a market analysis tool. A price chart shows the current price. It does not show what the holders paid. Underwater estimates the average entry price of the market. Then it measures the part of that supply that is below the current price.
 
 The tool covers the top 200 assets by market cap. It uses one year of daily data from the CoinMarketCap API. It computes the volume-weighted average price (VWAP) for each asset. It calls the share of volume above the current price the "underwater supply".
 
 At the time of writing, 50 percent of 33.3 trillion US dollars of traded volume is underwater. 73 percent of the tracked universe is below its cost basis. Privacy (84 percent) and Gaming (78 percent) are the most trapped sectors. AI and Big Data (40 percent) is the least trapped.
 
-UNDERWATER shows this structure in one view. It is an estimate that uses VWAP as a proxy.
+Underwater shows this structure in one view. It is an estimate that uses VWAP as a proxy.
 
 ## Contents
 
@@ -98,7 +98,7 @@ Stablecoins are excluded, because the peg makes the metric meaningless. Assets w
 - **Live refresh.** This button pulls a fresh universe from the CoinMarketCap API.
 - **Deep links.** Each asset has a URL, for example `?asset=DOGE`. The drawer has a copy link button.
 
-![UNDERWATER dashboard](docs/screenshot.png)
+![Underwater dashboard](docs/screenshot.png)
 
 ## Live demo
 
