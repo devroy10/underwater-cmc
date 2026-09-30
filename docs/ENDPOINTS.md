@@ -99,5 +99,5 @@ Sample: [`../evidence/global.sample.json`](../evidence/global.sample.json).
 
 ## Weekly build cost
 
-`npm run build:dataset` (universe 200, window 365d): **≈ 715 credits, ≈ 27s**.
+`bun run build:dataset` (universe 200, window 365d): **≈ 715 credits, ≈ 27s**.
 The live refresh button uses an 80-asset universe: **≈ 294 credits, ≈ 14s**.
