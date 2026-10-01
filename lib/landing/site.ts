@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 
-const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const origin =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000");
 const name = "Underwater";
 const title = "Underwater | The true cost-basis index";
 const description =
@@ -26,7 +32,7 @@ export const metadata: Metadata = {
     description,
     url: origin,
     siteName: name,
-    images: [{ url: "/media/banner.png", alt: name }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: name }],
     type: "website",
     locale: "en_US",
   },
@@ -34,6 +40,6 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: { url: "/media/banner.png", alt: name },
+    images: { url: "/og.png", width: 1200, height: 630, alt: name },
   },
 };
