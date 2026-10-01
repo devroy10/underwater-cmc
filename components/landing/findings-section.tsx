@@ -1,7 +1,5 @@
-import Image from "next/image";
 import { Divider } from "@/components/landing/stats-section";
 import { findings } from "@/lib/landing/content";
-import type { Finding } from "@/lib/landing/types";
 
 export function FindingsSection() {
   return (
@@ -12,29 +10,20 @@ export function FindingsSection() {
           <span className="text-[#70707d]">See what the </span>
           data reveals
         </h2>
-        <div className="flex flex-col items-center gap-4 xl:grid xl:grid-cols-4 xl:items-stretch xl:gap-5">
-          {findings.map((finding) => (
-            <FindingCard key={finding.title} finding={finding} />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 xl:gap-5">
+          {findings.map((finding, index) => (
+            <article
+              key={finding.title}
+              className="flex flex-col gap-2 rounded-sm border border-dashed border-[#010110]/20 bg-white p-6"
+            >
+              <p className="font-mono text-4xl decoration-dashed tabular-nums text-[#90909d]">
+                {String(index + 1).padStart(2, "0")}
+              </p>
+              <p className="text-[18px] leading-6 text-[#111117]">{finding.title}</p>
+            </article>
           ))}
         </div>
       </div>
     </section>
-  );
-}
-
-function FindingCard({ finding }: { finding: Finding }) {
-  return (
-    <article className="relative block h-[420px] w-[286px] max-w-full shrink-0 overflow-hidden rounded-lg">
-      <Image
-        src={finding.image}
-        alt={finding.alt}
-        fill
-        sizes="(min-width: 1200px) 286px, 286px"
-        className="object-cover"
-      />
-      <span className="relative z-10 block px-5 pt-[82px] pb-8 text-[18px] leading-6 text-[#111117]">
-        {finding.title}
-      </span>
-    </article>
   );
 }

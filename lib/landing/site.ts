@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-const name = "UNDERWATER";
-const title = "UNDERWATER - the crypto market's hidden cost basis";
+const name = "Underwater";
+const title = "Underwater | The true cost-basis index";
 const description =
   "See how much of the crypto market's traded supply sits underwater before price can move.";
 

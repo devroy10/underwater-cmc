@@ -80,8 +80,16 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   className="size-8 shrink-0"
                 />
                 <span className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                  <span className="font-display text-sm font-semibold">Underwater</span>
-                  <span className="text-muted-foreground text-xs">Cost-basis terminal</span>
+                  <span>
+                    <Image
+                      src="/wordmark.svg"
+                      alt="Underwater"
+                      width={913}
+                      height={154}
+                      unoptimized
+                      className="h-auto w-36"
+                    />
+                  </span>
                 </span>
               </SidebarMenuButton>
             </SidebarMenuItem>

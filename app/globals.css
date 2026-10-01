@@ -219,6 +219,24 @@
   html {
     @apply font-sans;
   }
+
+  html {
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+  }
+
+  html::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  html::-webkit-scrollbar-thumb { 
+    background-color: var(--color-foreground);
+  }
+
+  html::-webkit-scrollbar-track {
+    background-color: var(--color-background);
+  } 
+
   body {
     @apply bg-background text-foreground;
   }

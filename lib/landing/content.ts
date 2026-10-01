@@ -17,27 +17,23 @@ export const features: readonly Feature[] = [
     title: "Market Underwater Index",
     description:
       "One trailing oscillator for the whole market. It tracks the share of traded volume sitting below today's price, with a breadth line and a Fear and Greed overlay.",
-    image: "/images/features/feature-01.png",
     span: 2,
   },
   {
     title: "Cost-basis map",
     description:
       "Every asset placed by price against cost basis, and by how much of its volume is underwater.",
-    image: "/images/features/feature-02.png",
     span: 1,
   },
   {
     title: "Asset explorer",
     description: "Search, filter, and sort the universe by underwater supply.",
-    image: "/images/features/feature-03.png",
     span: 1,
   },
   {
     title: "Volume-by-price profile",
     description:
       "Open any asset to see exactly where the year's volume traded, plotted against the current price.",
-    image: "/images/features/feature-04.png",
     span: 2,
   },
   {
@@ -81,24 +77,16 @@ export const findings: readonly Finding[] = [
   {
     title:
       "Privacy and Gaming carry the heaviest overhang, at 84% and 78% underwater.",
-    image: "/images/cases/case-ramp.png",
-    alt: "Sector overhang",
   },
   {
     title: "ZEC and HYPE trade above almost all of the year's cost basis.",
-    image: "/images/cases/case-deel.png",
-    alt: "Assets in clean air",
   },
   {
     title: "DOGE holders sit on an average loss of 31%.",
-    image: "/images/cases/case-hyperliquid.png",
-    alt: "DOGE cost basis",
   },
   {
     title:
       "Half of a year of traded volume is trapped, and that is latent sell pressure.",
-    image: "/images/cases/case-klarna.png",
-    alt: "Market overhang",
   },
 ] as const;
 

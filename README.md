@@ -98,7 +98,15 @@ Stablecoins are excluded, because the peg makes the metric meaningless. Assets w
 - **Live refresh.** This button pulls a fresh universe from the CoinMarketCap API.
 - **Deep links.** Each asset has a URL, for example `?asset=DOGE`. The drawer has a copy link button.
 
-![Underwater dashboard](docs/screenshot.png)
+The screenshots below use the bundled snapshot.
+
+|  |
+|---|
+| <img src="public/media/overview-1.png" width="880" alt="Overview: market underwater index" /><br>**Overview.** The market underwater index with the breadth line, and the supply under water. |
+| <img src="public/media/overview-2.png" width="880" alt="Overview: sectors and leaderboards" /><br>**Sectors and leaderboards.** Underwater share by sector, the most trapped assets, and the cleanest air. |
+| <img src="public/media/cost-basis-map.png" width="880" alt="Cost-basis map" /><br>**Cost-basis map.** Every asset placed by price against cost basis, and by underwater share. |
+| <img src="public/media/assets.png" width="880" alt="Asset explorer" /><br>**Asset explorer.** Search, filter, and sort the universe by underwater supply. |
+| <img src="public/media/asset-sheet.png" width="880" alt="Asset drawer" /><br>**Asset drawer.** Price against cost basis, and the volume-by-price profile. |
 
 ## Live demo
 

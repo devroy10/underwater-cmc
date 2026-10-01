@@ -1,10 +1,10 @@
 import { CtaSection } from "@/components/landing/cta-section";
-import { DeveloperSection } from "@/components/landing/developer-section";
+// import { DeveloperSection } from "@/components/landing/developer-section";
 import { FactMarquee } from "@/components/landing/fact-marquee";
 import { FeaturesSection } from "@/components/landing/features-section";
 import { FindingsSection } from "@/components/landing/findings-section";
 import { HeroSection } from "@/components/landing/hero-section";
-import { SiteFooter } from "@/components/landing/site-footer";
+// import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import {
   MobileStatsSection,
@@ -22,10 +22,10 @@ export default function Home() {
         <StatsSection />
         <FindingsSection />
         <MobileStatsSection />
-        <DeveloperSection />
+        {/*<DeveloperSection />*/}
         <CtaSection />
       </main>
-      <SiteFooter />
+      {/*<SiteFooter />*/}
     </div>
   );
 }

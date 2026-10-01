@@ -30,11 +30,17 @@ function FeatureCard({ feature }: { feature: Feature }) {
   return (
     <article
       className={cn(
-        "relative flex flex-col overflow-hidden rounded-lg bg-[#f4f5fa] xl:block xl:h-[450px]",
+        "relative flex flex-col overflow-hidden rounded-lg bg-[#f4f5fa]",
+        feature.image && "xl:block xl:h-[450px]",
         spanClass[feature.span],
       )}
     >
-      <div className="relative z-10 p-6 xl:absolute xl:inset-x-0 xl:top-0 xl:p-8 xl:pt-6">
+      <div
+        className={cn(
+          "relative z-10 p-6",
+          feature.image && "xl:absolute xl:inset-x-0 xl:top-0 xl:p-8 xl:pt-6",
+        )}
+      >
         <h3 className="text-[18px] leading-6 font-normal text-[#111117] xl:text-[22px] xl:leading-7">
           {feature.title}
         </h3>
@@ -42,19 +48,25 @@ function FeatureCard({ feature }: { feature: Feature }) {
           {feature.description}
         </p>
       </div>
-      <div className="relative aspect-[16/10] w-full xl:absolute xl:inset-0 xl:aspect-auto xl:h-full">
-        <Image
-          src={feature.image}
-          alt=""
-          fill
-          sizes={
-            feature.span === 2
-              ? "(min-width: 1200px) 66vw, 100vw"
-              : "(min-width: 1200px) 33vw, 100vw"
-          }
-          className="rounded-lg object-cover"
-        />
-      </div>
+      {feature.image ? (
+        <div className="relative aspect-[16/10] w-full xl:absolute xl:inset-0 xl:aspect-auto xl:h-full">
+          <Image
+            src={feature.image}
+            alt=""
+            fill
+            sizes={
+              feature.span === 2
+                ? "(min-width: 1200px) 66vw, 100vw"
+                : "(min-width: 1200px) 33vw, 100vw"
+            }
+            className="rounded-lg object-cover"
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-[#f4f5fa] via-[#f4f5fa]/80 to-transparent"
+          />
+        </div>
+      ) : null}
     </article>
   );
 }
