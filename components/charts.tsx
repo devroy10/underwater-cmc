@@ -7,13 +7,20 @@
  */
 
 import { useMemo, useState, type KeyboardEvent, type MouseEvent } from "react";
-import type { ProfileBucket, SlimAsset } from "@/lib/types";
+import { SECTORS, type ProfileBucket, type SlimAsset } from "@/lib/types";
 import {
   SECTOR_COLORS,
   pct,
   signedPct,
   usd,
 } from "@/lib/format";
+import {
+  Legend,
+  LegendItem,
+  LegendLabel,
+  LegendMarker,
+  LegendValue,
+} from "@/components/charts/legend";
 
 const GRID = "var(--border)";
 const AXIS = "var(--muted-foreground)";
@@ -71,6 +78,16 @@ export function CostBasisMap({
     const y = (v: number) => r2(MAP_PAD.top + (1 - Math.max(0, Math.min(1, v))) * innerH);
     const r = (mcap: number) => r2(3 + Math.sqrt(mcap / maxMcap) * 26);
     return assets.map((a) => ({ a, cx: x(a.priceVsVwap), cy: y(a.underwater), rr: r(a.marketCap) }));
+  }, [assets]);
+
+  const sectorItems = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const a of assets) counts.set(a.sector, (counts.get(a.sector) ?? 0) + 1);
+    return SECTORS.filter((s) => counts.has(s)).map((s) => ({
+      label: s,
+      value: counts.get(s) ?? 0,
+      color: SECTOR_COLORS[s],
+    }));
   }, [assets]);
 
   function onMove(event: MouseEvent<SVGSVGElement>) {
@@ -170,6 +187,17 @@ export function CostBasisMap({
         </text>
       </svg>
 
+      <Legend
+        items={sectorItems}
+        className="mt-3 flex-row flex-wrap gap-x-3 gap-y-1"
+      >
+        <LegendItem className="flex items-center gap-1.5 px-1 py-0.5">
+          <LegendMarker className="h-2 w-2" />
+          <LegendLabel className="text-[11px] font-medium" />
+          <LegendValue className="text-[11px]" />
+        </LegendItem>
+      </Legend>
+
       {hover && hoverPos ? (
         <div
           className="pointer-events-none absolute z-10 w-56 rounded-lg border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md"
@@ -202,28 +230,42 @@ export function VolumeProfile({ buckets, price, vwap }: { buckets: ProfileBucket
   const max = Math.max(...buckets.map((b) => b.volume), 1);
   const rows = [...buckets].reverse();
   return (
-    <div className="flex flex-col gap-[3px]">
-      {rows.map((b, i) => {
-        const w = (b.volume / max) * 100;
-        const isAbove = b.price > price;
-        const nearPrice = Math.abs(Math.log(b.price / price)) < Math.log(1.06);
-        return (
-          <div
-            key={i}
-            className="h-2.5 rounded-sm"
-            style={{
-              width: `${Math.max(w, 0.6)}%`,
-              background: isAbove ? UNDERWATER : PROFIT,
-              opacity: isAbove ? 0.65 : 0.6,
-              outline: nearPrice ? `1px solid ${INK}` : "none",
-            }}
-            title={`${usd(b.price)} · ${usd(b.volume)}`}
-          />
-        );
-      })}
-      <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
-        <span className="tabular">cost basis {usd(vwap)}</span>
-        <span className="tabular text-foreground">now {usd(price)}</span>
+    <div className="flex flex-col">
+      <Legend
+        items={[
+          { label: "Traded above price", value: 0, color: UNDERWATER },
+          { label: "Traded below price", value: 0, color: PROFIT },
+        ]}
+        className="mb-2 flex-row flex-wrap gap-x-4 gap-y-1"
+      >
+        <LegendItem className="flex items-center gap-1.5 px-1 py-0.5">
+          <LegendMarker className="h-2 w-2" />
+          <LegendLabel className="text-[11px] font-medium" />
+        </LegendItem>
+      </Legend>
+      <div className="flex flex-col gap-[3px]">
+        {rows.map((b, i) => {
+          const w = (b.volume / max) * 100;
+          const isAbove = b.price > price;
+          const nearPrice = Math.abs(Math.log(b.price / price)) < Math.log(1.06);
+          return (
+            <div
+              key={i}
+              className="h-2.5 rounded-sm"
+              style={{
+                width: `${Math.max(w, 0.6)}%`,
+                background: isAbove ? UNDERWATER : PROFIT,
+                opacity: isAbove ? 0.65 : 0.6,
+                outline: nearPrice ? `1px solid ${INK}` : "none",
+              }}
+              title={`${usd(b.price)} · ${usd(b.volume)}`}
+            />
+          );
+        })}
+        <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
+          <span className="tabular">cost basis {usd(vwap)}</span>
+          <span className="tabular text-foreground">now {usd(price)}</span>
+        </div>
       </div>
     </div>
   );

@@ -24,6 +24,12 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Sparkline, VolumeProfile } from "./charts";
+import {
+  Legend,
+  LegendItem,
+  LegendLabel,
+  LegendMarker,
+} from "@/components/charts/legend";
 
 export function AssetDrawer() {
   const isMobile = useIsMobile();
@@ -93,10 +99,18 @@ export function AssetDrawer() {
               vwap={asset.vwapSeries}
               color={underwaterColor(asset.underwater)}
             />
-            <div className="mt-1 flex flex-col text-[11px] text-muted-foreground">
-              <span>solid = price</span>
-              <span>dashed = running volume-weighted cost basis</span>
-            </div>
+            <Legend
+              items={[
+                { label: "Price", value: 0, color: underwaterColor(asset.underwater) },
+                { label: "Cost basis", value: 0, color: "var(--cost)" },
+              ]}
+              className="mt-2 flex-row flex-wrap gap-x-4 gap-y-1"
+            >
+              <LegendItem className="flex items-center gap-1.5 px-1 py-0.5">
+                <LegendMarker className="h-2 w-2" />
+                <LegendLabel className="text-[11px] font-medium" />
+              </LegendItem>
+            </Legend>
           </section>
 
           <Separator />

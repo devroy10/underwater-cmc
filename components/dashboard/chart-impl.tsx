@@ -6,6 +6,13 @@ import { BarChart } from "@/components/charts/bar-chart";
 import { Bar } from "@/components/charts/bar";
 import { BarYAxis } from "@/components/charts/bar-y-axis";
 import { Grid } from "@/components/charts/grid";
+import {
+  Legend,
+  LegendItem,
+  LegendLabel,
+  LegendMarker,
+  LegendValue,
+} from "@/components/charts/legend";
 import { RingChart } from "@/components/charts/ring-chart";
 import { Ring } from "@/components/charts/ring";
 import { RingCenter } from "@/components/charts/ring-center";
@@ -21,14 +28,29 @@ export function MarketIndexChart({ series }: { series: MarketPoint[] }) {
     breadth: pctValue(p.breadth),
   }));
 
+  const last = data[data.length - 1];
+  const legend = [
+    { label: "Underwater supply", value: last?.underwater ?? 0, color: "var(--underwater)" },
+    { label: "Market breadth", value: last?.breadth ?? 0, color: "var(--profit)" },
+  ];
+
   return (
-    <AreaChart data={data} xDataKey="date" aspectRatio="2 / 1" className="w-full">
-      <Grid horizontal />
-      <Area dataKey="underwater" fill="var(--underwater)" />
-      <Area dataKey="breadth" fill="var(--profit)" fillOpacity={0.22} strokeWidth={1.5} />
-      <XAxis />
-      <ChartTooltip />
-    </AreaChart>
+    <div className="flex flex-col gap-3">
+      <Legend items={legend} className="flex-row flex-wrap gap-x-4 gap-y-1">
+        <LegendItem className="flex items-center gap-2 px-1 py-0.5">
+          <LegendMarker className="h-2.5 w-2.5" />
+          <LegendLabel className="text-xs font-medium" />
+          <LegendValue className="text-xs" formatValue={(v) => `${v}%`} />
+        </LegendItem>
+      </Legend>
+      <AreaChart data={data} xDataKey="date" aspectRatio="2 / 1" className="w-full">
+        <Grid horizontal />
+        <Area dataKey="underwater" fill="var(--underwater)" />
+        <Area dataKey="breadth" fill="var(--profit)" fillOpacity={0.22} strokeWidth={1.5} />
+        <XAxis />
+        <ChartTooltip />
+      </AreaChart>
+    </div>
   );
 }
 
